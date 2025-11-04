@@ -10,7 +10,7 @@ local Player = Players.LocalPlayer
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "STAN_UI_V3"
+gui.Name = "STAN_UI_V1"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -595,10 +595,10 @@ homeTab.MouseButton1Click:Fire()
 -- Notification
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "STAN UI v3.0";
+        Title = "STAN UI v1.0";
         Text = "Successfully loaded!";
         Duration = 3;
     })
 end)
 
-print("✅ STAN UI v3.0 Loaded Successfully!")
+print("✅ STAN UI v1.0 Loaded Successfully!")
