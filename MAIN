@@ -1,10 +1,3 @@
--- STAN UI v3.0 - FIXED VERSION
--- Working Key System - Change YOUR_KEY_HERE
--- Copy everything and paste to executor!
-
--- ============================================
--- CHANGE YOUR KEY HERE! (Line 8)
--- ============================================
 local YOUR_SECRET_KEY = "STANCUTE"
 -- ============================================
 
