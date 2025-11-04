@@ -1,13 +1,14 @@
-local YOUR_SECRET_KEY = "STANCUTE"
--- ============================================
+-- STAN UI v3.0 - NO KEY SYSTEM
+-- Direct load, walang key needed!
+-- Upload this to GitHub then use loadstring
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Player = Players.LocalPlayer
 
+-- Create GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "STAN_UI_V3"
 gui.ResetOnSpawn = false
@@ -22,174 +23,42 @@ else
     gui.Parent = Player:WaitForChild("PlayerGui")
 end
 
--- KEY SYSTEM
-local keyFrame = Instance.new("Frame")
-keyFrame.Name = "KeySystem"
-keyFrame.Size = UDim2.new(0, 420, 0, 350)
-keyFrame.Position = UDim2.new(0.5, -210, 0.5, -175)
-keyFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-keyFrame.BorderSizePixel = 0
-keyFrame.Parent = gui
+-- MAIN FRAME
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 650, 0, 410)
+main.Position = UDim2.new(0.5, -325, 0.5, -205)
+main.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+main.BorderSizePixel = 0
+main.Parent = gui
 
-local keyCorner = Instance.new("UICorner")
-keyCorner.CornerRadius = UDim.new(0, 14)
-keyCorner.Parent = keyFrame
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
 
-local keyHeader = Instance.new("Frame")
-keyHeader.Size = UDim2.new(1, 0, 0, 110)
-keyHeader.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
-keyHeader.BorderSizePixel = 0
-keyHeader.Parent = keyFrame
-
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 14)
-headerCorner.Parent = keyHeader
-
-local headerGrad = Instance.new("UIGradient")
-headerGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(147, 51, 234)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(219, 39, 119)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(59, 130, 246))
-}
-headerGrad.Parent = keyHeader
-
-spawn(function()
-    while keyHeader and keyHeader.Parent do
-        headerGrad.Rotation = headerGrad.Rotation + 1
-        task.wait(0.05)
-    end
-end)
-
-local keyIcon = Instance.new("TextLabel")
-keyIcon.Size = UDim2.new(0, 60, 0, 60)
-keyIcon.Position = UDim2.new(0.5, -30, 0, 12)
-keyIcon.BackgroundTransparency = 1
-keyIcon.Font = Enum.Font.GothamBold
-keyIcon.Text = "🔐"
-keyIcon.TextSize = 38
-keyIcon.Parent = keyHeader
-
-local keyTitle = Instance.new("TextLabel")
-keyTitle.Size = UDim2.new(1, 0, 0, 24)
-keyTitle.Position = UDim2.new(0, 0, 0, 78)
-keyTitle.BackgroundTransparency = 1
-keyTitle.Font = Enum.Font.GothamBold
-keyTitle.Text = "STAN UI v3.0"
-keyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyTitle.TextSize = 18
-keyTitle.Parent = keyHeader
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -40, 0, 55)
-statusLabel.Position = UDim2.new(0, 20, 0, 125)
-statusLabel.BackgroundColor3 = Color3.fromRGB(59, 130, 246)
-statusLabel.BackgroundTransparency = 0.9
-statusLabel.BorderSizePixel = 0
-statusLabel.Font = Enum.Font.GothamMedium
-statusLabel.Text = "🔒 Access Required\n\nEnter key to continue"
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.TextSize = 12
-statusLabel.Parent = keyFrame
-
-local statusCorner = Instance.new("UICorner")
-statusCorner.CornerRadius = UDim.new(0, 10)
-statusCorner.Parent = statusLabel
-
-local keyInput = Instance.new("TextBox")
-keyInput.Size = UDim2.new(1, -40, 0, 44)
-keyInput.Position = UDim2.new(0, 20, 0, 195)
-keyInput.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
-keyInput.BorderSizePixel = 0
-keyInput.Font = Enum.Font.Gotham
-keyInput.PlaceholderText = "Enter your key..."
-keyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
-keyInput.Text = ""
-keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyInput.TextSize = 13
-keyInput.TextXAlignment = Enum.TextXAlignment.Center
-keyInput.Parent = keyFrame
-
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 10)
-inputCorner.Parent = keyInput
-
-local verifyBtn = Instance.new("TextButton")
-verifyBtn.Size = UDim2.new(1, -40, 0, 44)
-verifyBtn.Position = UDim2.new(0, 20, 0, 249)
-verifyBtn.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
-verifyBtn.BorderSizePixel = 0
-verifyBtn.Font = Enum.Font.GothamBold
-verifyBtn.Text = "🔓 Verify Key"
-verifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-verifyBtn.TextSize = 14
-verifyBtn.Parent = keyFrame
-
-local btnCorner = Instance.new("UICorner")
-btnCorner.CornerRadius = UDim.new(0, 10)
-btnCorner.Parent = verifyBtn
-
-local btnGrad = Instance.new("UIGradient")
-btnGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(147, 51, 234)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(219, 39, 119))
-}
-btnGrad.Parent = verifyBtn
-
-local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1, -40, 0, 35)
-infoLabel.Position = UDim2.new(0, 20, 0, 303)
-infoLabel.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
-infoLabel.BackgroundTransparency = 0.95
-infoLabel.BorderSizePixel = 0
-infoLabel.Font = Enum.Font.Gotham
-infoLabel.Text = "💡 Contact owner for key access"
-infoLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
-infoLabel.TextSize = 11
-infoLabel.Parent = keyFrame
-
-local infoCorner = Instance.new("UICorner")
-infoCorner.CornerRadius = UDim.new(0, 8)
-infoCorner.Parent = infoLabel
-
--- MAIN UI
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainUI"
-mainFrame.Size = UDim2.new(0, 650, 0, 410)
-mainFrame.Position = UDim2.new(0.5, -325, 0.5, -205)
-mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-mainFrame.BorderSizePixel = 0
-mainFrame.Visible = false
-mainFrame.Parent = gui
-
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 12)
-mainCorner.Parent = mainFrame
-
+-- TOP BAR
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 70)
 topBar.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
 topBar.BorderSizePixel = 0
-topBar.Parent = mainFrame
+topBar.Parent = main
 
-local topCorner = Instance.new("UICorner")
-topCorner.CornerRadius = UDim.new(0, 12)
-topCorner.Parent = topBar
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 12)
 
-local topGrad = Instance.new("UIGradient")
-topGrad.Color = ColorSequence.new{
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
     ColorSequenceKeypoint.new(0, Color3.fromRGB(147, 51, 234)),
     ColorSequenceKeypoint.new(0.5, Color3.fromRGB(219, 39, 119)),
     ColorSequenceKeypoint.new(1, Color3.fromRGB(59, 130, 246))
 }
-topGrad.Parent = topBar
+gradient.Parent = topBar
 
 spawn(function()
     while topBar and topBar.Parent do
-        topGrad.Rotation = topGrad.Rotation + 1
+        gradient.Rotation = gradient.Rotation + 1
         task.wait(0.05)
     end
 end)
 
+-- PFP
 local pfp = Instance.new("ImageLabel")
 pfp.Size = UDim2.new(0, 46, 0, 46)
 pfp.Position = UDim2.new(0, 14, 0, 12)
@@ -197,14 +66,13 @@ pfp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 pfp.BorderSizePixel = 0
 pfp.Parent = topBar
 
-local pfpCorner = Instance.new("UICorner")
-pfpCorner.CornerRadius = UDim.new(1, 0)
-pfpCorner.Parent = pfp
+Instance.new("UICorner", pfp).CornerRadius = UDim.new(1, 0)
 
 pcall(function()
     pfp.Image = Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
 end)
 
+-- Status
 local status = Instance.new("Frame")
 status.Size = UDim2.new(0, 12, 0, 12)
 status.Position = UDim2.new(1, -10, 1, -10)
@@ -212,10 +80,9 @@ status.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
 status.BorderSizePixel = 0
 status.Parent = pfp
 
-local statusCorner2 = Instance.new("UICorner")
-statusCorner2.CornerRadius = UDim.new(1, 0)
-statusCorner2.Parent = status
+Instance.new("UICorner", status).CornerRadius = UDim.new(1, 0)
 
+-- Display Name
 local displayName = Instance.new("TextLabel")
 displayName.Size = UDim2.new(0, 280, 0, 20)
 displayName.Position = UDim2.new(0, 68, 0, 16)
@@ -227,6 +94,7 @@ displayName.TextSize = 15
 displayName.TextXAlignment = Enum.TextXAlignment.Left
 displayName.Parent = topBar
 
+-- Username
 local username = Instance.new("TextLabel")
 username.Size = UDim2.new(0, 280, 0, 16)
 username.Position = UDim2.new(0, 68, 0, 36)
@@ -238,16 +106,18 @@ username.TextSize = 11
 username.TextXAlignment = Enum.TextXAlignment.Left
 username.Parent = topBar
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 140, 0, 70)
-titleLabel.Position = UDim2.new(1, -150, 0, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.Text = "STAN"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 22
-titleLabel.Parent = topBar
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0, 140, 0, 70)
+title.Position = UDim2.new(1, -150, 0, 0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.Text = "STAN"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 22
+title.Parent = topBar
 
+-- Close Button
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 32, 0, 32)
 closeBtn.Position = UDim2.new(1, -38, 0, 19)
@@ -260,10 +130,9 @@ closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeBtn.TextSize = 15
 closeBtn.Parent = topBar
 
-local closeBtnCorner = Instance.new("UICorner")
-closeBtnCorner.CornerRadius = UDim.new(0, 6)
-closeBtnCorner.Parent = closeBtn
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
 
+-- Minimize Button
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 32, 0, 32)
 minBtn.Position = UDim2.new(1, -73, 0, 19)
@@ -276,20 +145,17 @@ minBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 minBtn.TextSize = 16
 minBtn.Parent = topBar
 
-local minBtnCorner = Instance.new("UICorner")
-minBtnCorner.CornerRadius = UDim.new(0, 6)
-minBtnCorner.Parent = minBtn
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
 
+-- Tabs Container
 local tabs = Instance.new("Frame")
 tabs.Size = UDim2.new(0, 145, 1, -80)
 tabs.Position = UDim2.new(0, 8, 0, 75)
 tabs.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 tabs.BorderSizePixel = 0
-tabs.Parent = mainFrame
+tabs.Parent = main
 
-local tabsCorner = Instance.new("UICorner")
-tabsCorner.CornerRadius = UDim.new(0, 10)
-tabsCorner.Parent = tabs
+Instance.new("UICorner", tabs).CornerRadius = UDim.new(0, 10)
 
 local tabLayout = Instance.new("UIListLayout")
 tabLayout.Padding = UDim.new(0, 5)
@@ -301,17 +167,17 @@ tabPadding.PaddingLeft = UDim.new(0, 8)
 tabPadding.PaddingRight = UDim.new(0, 8)
 tabPadding.Parent = tabs
 
+-- Content Container
 local content = Instance.new("Frame")
 content.Size = UDim2.new(1, -168, 1, -80)
 content.Position = UDim2.new(0, 158, 0, 75)
 content.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 content.BorderSizePixel = 0
-content.Parent = mainFrame
+content.Parent = main
 
-local contentCorner = Instance.new("UICorner")
-contentCorner.CornerRadius = UDim.new(0, 10)
-contentCorner.Parent = content
+Instance.new("UICorner", content).CornerRadius = UDim.new(0, 10)
 
+-- Minimized Frame
 local minFrame = Instance.new("TextButton")
 minFrame.Size = UDim2.new(0, 100, 0, 42)
 minFrame.Position = UDim2.new(0.5, -50, 0.5, -21)
@@ -326,83 +192,16 @@ minFrame.Active = true
 minFrame.Draggable = true
 minFrame.Parent = gui
 
-local minFrameCorner = Instance.new("UICorner")
-minFrameCorner.CornerRadius = UDim.new(0, 10)
-minFrameCorner.Parent = minFrame
+Instance.new("UICorner", minFrame).CornerRadius = UDim.new(0, 10)
 
--- KEY VERIFICATION
-verifyBtn.MouseButton1Click:Connect(function()
-    local enteredKey = keyInput.Text
-    
-    if enteredKey == "" then
-        statusLabel.Text = "❌ Error\n\nPlease enter a key!"
-        statusLabel.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-        statusLabel.BackgroundTransparency = 0.9
-        return
-    end
-    
-    verifyBtn.Text = "⏳ Verifying..."
-    verifyBtn.BackgroundColor3 = Color3.fromRGB(251, 191, 36)
-    statusLabel.Text = "🔄 Checking...\n\nPlease wait..."
-    statusLabel.BackgroundColor3 = Color3.fromRGB(251, 191, 36)
-    statusLabel.BackgroundTransparency = 0.9
-    
-    task.wait(0.8)
-    
-    if enteredKey == YOUR_SECRET_KEY then
-        verifyBtn.Text = "✓ Success!"
-        verifyBtn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-        statusLabel.Text = "✅ Access Granted!\n\nLoading UI..."
-        statusLabel.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-        statusLabel.BackgroundTransparency = 0.9
-        
-        task.wait(0.6)
-        
-        TweenService:Create(keyFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0.5, -210, -1, 0)
-        }):Play()
-        
-        task.wait(0.3)
-        keyFrame:Destroy()
-        
-        mainFrame.Visible = true
-        mainFrame.Position = UDim2.new(0.5, -325, -1, 0)
-        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0.5, -325, 0.5, -205)
-        }):Play()
-        
-        pcall(function()
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "STAN UI v3.0";
-                Text = "Successfully loaded!";
-                Duration = 3;
-            })
-        end)
-    else
-        verifyBtn.Text = "✗ Invalid Key!"
-        verifyBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-        statusLabel.Text = "❌ Wrong Key!\n\nPlease try again"
-        statusLabel.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-        statusLabel.BackgroundTransparency = 0.9
-        keyInput.Text = ""
-        
-        task.wait(1.5)
-        
-        verifyBtn.Text = "🔓 Verify Key"
-        verifyBtn.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
-        statusLabel.Text = "🔒 Access Required\n\nEnter key to continue"
-        statusLabel.BackgroundColor3 = Color3.fromRGB(59, 130, 246)
-        statusLabel.BackgroundTransparency = 0.9
-    end
-end)
-
+-- Controls
 minBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
+    main.Visible = false
     minFrame.Visible = true
 end)
 
 minFrame.MouseButton1Click:Connect(function()
-    mainFrame.Visible = true
+    main.Visible = true
     minFrame.Visible = false
 end)
 
@@ -410,14 +209,14 @@ closeBtn.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
--- DRAG
+-- Dragging
 local dragging, dragInput, dragStart, startPos
 
 topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = mainFrame.Position
+        startPos = main.Position
     end
 end)
 
@@ -430,14 +229,14 @@ end)
 UIS.InputChanged:Connect(function(input)
     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(
+        main.Position = UDim2.new(
             startPos.X.Scale, startPos.X.Offset + delta.X,
             startPos.Y.Scale, startPos.Y.Offset + delta.Y
         )
     end
 end)
 
--- TABS
+-- Tab System
 local function clearContent()
     for _, v in pairs(content:GetChildren()) do
         if v:IsA("GuiObject") then
@@ -458,9 +257,7 @@ local function makeTab(name, icon, order)
     btn.LayoutOrder = order
     btn.Parent = tabs
     
-    local btnCorner2 = Instance.new("UICorner")
-    btnCorner2.CornerRadius = UDim.new(0, 7)
-    btnCorner2.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 7)
     
     return btn
 end
@@ -486,14 +283,12 @@ homeTab.MouseButton1Click:Connect(function()
     welcome.BackgroundTransparency = 0.95
     welcome.BorderSizePixel = 0
     welcome.Font = Enum.Font.GothamBold
-    welcome.Text = "👋 Welcome " .. Player.DisplayName .. "!\n\nSTAN UI v3.0 Successfully Loaded!"
+    welcome.Text = "👋 Welcome " .. Player.DisplayName .. "!\n\nSTAN UI v3.0 Loaded Successfully!"
     welcome.TextColor3 = Color3.fromRGB(255, 255, 255)
     welcome.TextSize = 13
     welcome.Parent = content
     
-    local welcomeCorner = Instance.new("UICorner")
-    welcomeCorner.CornerRadius = UDim.new(0, 10)
-    welcomeCorner.Parent = welcome
+    Instance.new("UICorner", welcome).CornerRadius = UDim.new(0, 10)
     
     local info = Instance.new("TextLabel")
     info.Size = UDim2.new(1, -20, 1, -100)
@@ -501,15 +296,13 @@ homeTab.MouseButton1Click:Connect(function()
     info.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
     info.BorderSizePixel = 0
     info.Font = Enum.Font.Gotham
-    info.Text = "📊 Status: Active\n🎮 User: " .. Player.DisplayName .. "\n⚡ Features: All Unlocked\n🔒 Protected: Yes\n\n✨ Go to Cheats tab to start!"
+    info.Text = "📊 Status: Active\n🎮 User: " .. Player.DisplayName .. "\n⚡ All Features: Unlocked\n🔒 Protected: Yes\n\n✨ Go to Cheats tab!"
     info.TextColor3 = Color3.fromRGB(200, 200, 220)
     info.TextSize = 12
     info.TextYAlignment = Enum.TextYAlignment.Top
     info.Parent = content
     
-    local infoCorner2 = Instance.new("UICorner")
-    infoCorner2.CornerRadius = UDim.new(0, 10)
-    infoCorner2.Parent = info
+    Instance.new("UICorner", info).CornerRadius = UDim.new(0, 10)
     
     local infoPad = Instance.new("UIPadding")
     infoPad.PaddingLeft = UDim.new(0, 15)
@@ -549,9 +342,7 @@ cheatTab.MouseButton1Click:Connect(function()
         frame.BorderSizePixel = 0
         frame.Parent = scroll
         
-        local frameCorner = Instance.new("UICorner")
-        frameCorner.CornerRadius = UDim.new(0, 7)
-        frameCorner.Parent = frame
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 7)
         
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(0.65, 0, 1, 0)
@@ -575,15 +366,14 @@ cheatTab.MouseButton1Click:Connect(function()
         toggle.TextSize = 10
         toggle.Parent = frame
         
-        local toggleCorner = Instance.new("UICorner")
-        toggleCorner.CornerRadius = UDim.new(0, 5)
-        toggleCorner.Parent = toggle
+        Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 5)
         
         toggle.MouseButton1Click:Connect(function()
             callback(toggle)
         end)
     end
     
+    -- FLY
     addToggle("✈️ Fly", function(btn)
         fly = not fly
         btn.Text = fly and "ON" or "OFF"
@@ -604,4 +394,211 @@ cheatTab.MouseButton1Click:Connect(function()
                         local move = Vector3.new()
                         
                         if UIS:IsKeyDown(Enum.KeyCode.W) then
-                            move = move + Workspace.CurrentCamera.CFrame
+                            move = move + Workspace.CurrentCamera.CFrame.LookVector
+                        end
+                        if UIS:IsKeyDown(Enum.KeyCode.S) then
+                            move = move - Workspace.CurrentCamera.CFrame.LookVector
+                        end
+                        if UIS:IsKeyDown(Enum.KeyCode.A) then
+                            move = move - Workspace.CurrentCamera.CFrame.RightVector
+                        end
+                        if UIS:IsKeyDown(Enum.KeyCode.D) then
+                            move = move + Workspace.CurrentCamera.CFrame.RightVector
+                        end
+                        if UIS:IsKeyDown(Enum.KeyCode.Space) then
+                            move = move + Vector3.new(0, 1, 0)
+                        end
+                        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+                            move = move - Vector3.new(0, 1, 0)
+                        end
+                        
+                        bv.Velocity = move * 50
+                        task.wait()
+                    end
+                    bv:Destroy()
+                    bg:Destroy()
+                end)
+            end
+        end
+    end)
+    
+    -- SPEED
+    addToggle("🏃 Speed", function(btn)
+        speed = not speed
+        btn.Text = speed and "ON" or "OFF"
+        btn.BackgroundColor3 = speed and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = speed and 100 or 16
+        end
+    end)
+    
+    -- JUMP
+    addToggle("🦘 Jump", function(btn)
+        jump = not jump
+        btn.Text = jump and "ON" or "OFF"
+        btn.BackgroundColor3 = jump and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.JumpPower = jump and 150 or 50
+        end
+    end)
+    
+    -- NOCLIP
+    addToggle("👻 Noclip", function(btn)
+        noclip = not noclip
+        btn.Text = noclip and "ON" or "OFF"
+        btn.BackgroundColor3 = noclip and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        
+        spawn(function()
+            while noclip do
+                if Player.Character then
+                    for _, part in pairs(Player.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+                task.wait()
+            end
+        end)
+    end)
+    
+    -- ESP
+    addToggle("👁️ ESP", function(btn)
+        esp = not esp
+        btn.Text = esp and "ON" or "OFF"
+        btn.BackgroundColor3 = esp and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        
+        if esp then
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= Player and plr.Character then
+                    local highlight = Instance.new("Highlight", plr.Character)
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                end
+            end
+        else
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr.Character then
+                    local highlight = plr.Character:FindFirstChildOfClass("Highlight")
+                    if highlight then
+                        highlight:Destroy()
+                    end
+                end
+            end
+        end
+    end)
+    
+    -- WALLBANG
+    addToggle("🧱 Wallbang", function(btn)
+        wallbang = not wallbang
+        btn.Text = wallbang and "ON" or "OFF"
+        btn.BackgroundColor3 = wallbang and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide then
+                v.Transparency = wallbang and 0.7 or 0
+            end
+        end
+    end)
+    
+    -- INFINITE YIELD
+    local iyBtn = Instance.new("TextButton")
+    iyBtn.Size = UDim2.new(1, -8, 0, 38)
+    iyBtn.BackgroundColor3 = Color3.fromRGB(59, 130, 246)
+    iyBtn.BorderSizePixel = 0
+    iyBtn.Font = Enum.Font.GothamBold
+    iyBtn.Text = "📜 Infinite Yield"
+    iyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    iyBtn.TextSize = 11
+    iyBtn.Parent = scroll
+    
+    Instance.new("UICorner", iyBtn).CornerRadius = UDim.new(0, 7)
+    
+    iyBtn.MouseButton1Click:Connect(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+    
+    spawn(function()
+        while scroll and scroll.Parent do
+            scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+            task.wait(0.1)
+        end
+    end)
+end)
+
+-- PLAYERS TAB
+playerTab.MouseButton1Click:Connect(function()
+    clearContent()
+    playerTab.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+    playerTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    homeTab.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+    homeTab.TextColor3 = Color3.fromRGB(180, 180, 200)
+    cheatTab.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+    cheatTab.TextColor3 = Color3.fromRGB(180, 180, 200)
+    
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Size = UDim2.new(1, -10, 1, -10)
+    scroll.Position = UDim2.new(0, 5, 0, 5)
+    scroll.BackgroundTransparency = 1
+    scroll.BorderSizePixel = 0
+    scroll.ScrollBarThickness = 4
+    scroll.ScrollBarImageColor3 = Color3.fromRGB(147, 51, 234)
+    scroll.Parent = content
+    
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = scroll
+    
+    local function updatePlayers()
+        for _, v in pairs(scroll:GetChildren()) do
+            if v:IsA("TextButton") then
+                v:Destroy()
+            end
+        end
+        
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= Player then
+                local btn = Instance.new("TextButton")
+                btn.Size = UDim2.new(1, -8, 0, 36)
+                btn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+                btn.BorderSizePixel = 0
+                btn.Font = Enum.Font.GothamBold
+                btn.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
+                btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                btn.TextSize = 11
+                btn.Parent = scroll
+                
+                Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 7)
+                
+                btn.MouseButton1Click:Connect(function()
+                    if Player.Character and plr.Character then
+                        if Player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+                            Player.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+                        end
+                    end
+                end)
+            end
+        end
+        
+        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+    end
+    
+    updatePlayers()
+    Players.PlayerAdded:Connect(updatePlayers)
+    Players.PlayerRemoving:Connect(updatePlayers)
+end)
+
+-- Load Home Tab by default
+homeTab.MouseButton1Click:Fire()
+
+-- Notification
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "STAN UI v3.0";
+        Text = "Successfully loaded!";
+        Duration = 3;
+    })
+end)
+
+print("✅ STAN UI v3.0 Loaded Successfully!")
