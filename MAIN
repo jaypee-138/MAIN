@@ -1,5 +1,5 @@
--- PROXIMITY PROMPT TOOL GRABBER + ESP v7.3 (Global Range Bypass)
--- FUNCTION: Triggers ALL filtered Tool-Giver ProximityPrompts regardless of distance.
+-- PROXIMITY PROMPT TOOL GRABBER + ESP v7.4 (LootBox Priority/Global Grab)
+-- FUNCTION: Prioritizes Prompts containing "Loot", "Box", or "Interact" and triggers them globally.
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -12,9 +12,9 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local Character = Player.Character or Player.CharacterAdded:Wait()
 
 local ProximityPrompts = {}
-local Enabled = true -- Controls the Global Auto-Trigger
+local Enabled = true 
 
--- === ESP AND GUI SETUP (Unchanged for control) ===
+-- === ESP AND GUI SETUP (Unchanged) ===
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "PromptESP"
 ScreenGui.ResetOnSpawn = false
@@ -54,7 +54,7 @@ end)
 
 -- === CORE FUNCTIONS ===
 
--- 1. PROMPT SCANNER (Tool-Giver Filter - Unchanged from v7.2)
+-- 1. PROMPT SCANNER (CRITICAL CHANGE: Added LootBox/Interact keywords)
 local function scanPrompts()
     for _, data in ipairs(ProximityPrompts) do
         if data.ESPLabel then data.ESPLabel:Destroy() end
@@ -62,60 +62,51 @@ local function scanPrompts()
     end
     ProximityPrompts = {}
     
-    local toolKeywords = {"get", "take", "grab", "equip", "tool", "item", "spawn", "pick up"}
+    -- Keywords that suggest it gives an item or triggers a box/interaction
+    local targetKeywords = {"get", "take", "grab", "equip", "tool", "item", "spawn", "pick up", "loot", "box", "interact"}
     
     for _, descendant in ipairs(Workspace:GetDescendants()) do
         if descendant:IsA("ProximityPrompt") then
             local prompt = descendant
-            local toolName = "Unknown Item (Filtered)"
+            local toolName = "Loot/Action" -- Changed default name
             local parent = prompt.Parent
             local isToolGiver = false
             
+            local promptText = prompt.ObjectText:lower()
+            local parentName = parent.Name:lower()
+
+            -- Method 1: Check if a Tool is present (highest priority)
             local toolCandidate = parent:FindFirstChildOfClass("Tool")
             if toolCandidate then
                 toolName = toolCandidate.Name
                 isToolGiver = true
             else
-                local promptText = prompt.ObjectText:lower()
-                local parentName = parent.Name:lower()
-                local hasToolName = false
-                local guessedName = ""
-                
-                local nameAttr = parent:GetAttribute("ToolName") or parent:GetAttribute("ItemName") or parent:GetAttribute("Tool")
-                if nameAttr and type(nameAttr) == "string" and nameAttr ~= "" then
-                    guessedName = nameAttr
-                    hasToolName = true
-                else
-                     for _, child in ipairs(parent:GetChildren()) do
-                        if child:IsA("BasePart") or child:IsA("MeshPart") then
-                             if not child.Name:match("Handle") and not child.Name:match("Part") and not child.Name:match("Base") then
-                                 guessedName = child.Name
-                                 hasToolName = true
-                                 break
-                             end
-                        end
-                    end
-                end
-
-                if hasToolName then
-                    toolName = guessedName
-                end
-
+                -- Method 2: Check for Tool/Loot Keywords
                 local isKeywordMatch = false
-                for _, keyword in ipairs(toolKeywords) do
+                for _, keyword in ipairs(targetKeywords) do
                     if promptText:find(keyword) or parentName:find(keyword) then
                         isKeywordMatch = true
                         break
                     end
                 end
                 
+                -- Anti-Keywords (Still avoids UI/Sleep actions)
                 if not (promptText:find("sleep") or promptText:find("craft") or promptText:find("store") or promptText:find("ui") or parentName:find("sleep") or parentName:find("craft") or parentName:find("store")) then
-                    if isKeywordMatch and hasToolName then
+                    
+                    if isKeywordMatch then
                         isToolGiver = true
+                        -- Try to guess the name from attributes if keywords match
+                        local nameAttr = parent:GetAttribute("ToolName") or parent:GetAttribute("ItemName") or parent:GetAttribute("Tool")
+                        if nameAttr and type(nameAttr) == "string" and nameAttr ~= "" then
+                            toolName = nameAttr
+                        elseif promptText:find("lootbox") or promptText:find("chest") then
+                            toolName = "LootBox/Chest"
+                        end
                     end
                 end
             end
             
+            -- Only include the Prompt if it is highly likely to be a Tool/Loot Giver
             if isToolGiver then
                  table.insert(ProximityPrompts, {
                     Prompt = prompt,
@@ -156,7 +147,7 @@ local function createESP(promptData)
     Label.TextColor3 = Color3.fromRGB(0, 255, 255) 
     Label.Font = Enum.Font.SourceSansBold
     Label.TextSize = 16
-    Label.Text = string.format("[GLOBAL GRAB] ITEM: %s", promptData.ToolName) -- Updated text
+    Label.Text = string.format("[GLOBAL GRAB] TARGET: %s", promptData.ToolName) -- Updated text
     Label.Parent = Billboard
     
     local Line = Instance.new("Part")
@@ -200,7 +191,7 @@ local function updateESP()
     end
 end
 
--- 3. AUTO-GRAB/TRIGGER (CRITICAL CHANGE: Range Bypass)
+-- 3. AUTO-GRAB/TRIGGER (Range Bypass - Unchanged)
 local function globalTrigger()
     if not Enabled then return end
     
@@ -209,27 +200,26 @@ local function globalTrigger()
     for _, data in ipairs(ProximityPrompts) do
         local prompt = data.Prompt
         
-        -- Check if the prompt is still valid and enabled
         if prompt.Parent and prompt.Enabled and prompt.Triggered:Wait(0.05) == nil then
             
-            -- *** BYPASS RANGE CHECK ***
-            -- Directly fire the event without distance checking
-            prompt:InputHoldEnd() 
+            -- BYPASS RANGE CHECK
+            pcall(function()
+                 prompt:InputHoldEnd() 
+            end)
             grabbedCount = grabbedCount + 1
             
             StarterGui:SetCore("SendNotification", {
                 Title="GLOBAL GRAB", 
-                Text="Grabbed: " .. data.ToolName, 
+                Text="Triggered: " .. data.ToolName, 
                 Duration=1.5
             })
             
-            -- Small wait to avoid overwhelming the server
             task.wait(0.01)
         end
     end
 
     if grabbedCount > 0 then
-        StatusLabel.Text = "GRABBED " .. grabbedCount .. " ITEMS GLOBALLY!"
+        StatusLabel.Text = "TRIGGERED " .. grabbedCount .. " PROMPTS GLOBALLY!"
     end
 end
 
@@ -242,14 +232,13 @@ end)
 
 RunService.Heartbeat:Connect(function()
     updateESP()
-    -- Global trigger runs every frame when enabled, grabbing everything instantly
     if Enabled then
         globalTrigger()
     end
 end)
 
 StarterGui:SetCore("SendNotification", {
-    Title="PROMPT GRABBER v7.3", 
-    Text="GLOBAL GRAB is ready. It will trigger all tool prompts regardless of distance.", 
+    Title="PROMPT GRABBER v7.4", 
+    Text="Now targeting LootBoxes and all item-giving Prompts globally!", 
     Duration=6
 })
