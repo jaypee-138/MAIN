@@ -1,244 +1,164 @@
--- PROXIMITY PROMPT TOOL GRABBER + ESP v7.4 (LootBox Priority/Global Grab)
--- FUNCTION: Prioritizes Prompts containing "Loot", "Box", or "Interact" and triggers them globally.
+-- SELDA RP AUTO LOOTBOX OPENER v1.0
+-- Auto-TP to ProximityPrompt + Trigger (Press E)
+-- ON/OFF Toggle | Mobile/PC | No Crash
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
-local StarterGui = game:GetService("StarterGui")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 
 local Player = Players.LocalPlayer
-if not Player then return end
-local PlayerGui = Player:WaitForChild("PlayerGui")
 local Character = Player.Character or Player.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local ProximityPrompts = {}
-local Enabled = true 
+-- === CONFIG ===
+local SEARCH_KEYWORDS = {"lootbox", "chest", "loot", "treasure", "box", "crate"}  -- Add more if needed
+local TP_DISTANCE = 5  -- Distance to stand before triggering
+local TRIGGER_DELAY = 0.1  -- Delay between triggers
+local MAX_RANGE = 500  -- Max search distance
 
--- === ESP AND GUI SETUP (Unchanged) ===
+-- === VARIABLES ===
+local autoRunning = false
+local connection = nil
+local foundPrompts = {}
+
+-- === FIND ALL PROXIMITY PROMPTS ===
+local function findLootPrompts()
+    foundPrompts = {}
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            local parent = obj.Parent
+            local name = (parent and parent.Name:lower()) or ""
+            local modelName = (parent and parent.Parent and parent.Parent.Name:lower()) or ""
+            
+            -- Match keywords
+            for _, keyword in pairs(SEARCH_KEYWORDS) do
+                if string.find(name, keyword) or string.find(modelName, keyword) then
+                    table.insert(foundPrompts, obj)
+                    break
+                end
+            end
+        end
+    end
+end
+
+-- === AUTO LOOP ===
+local function startAutoLoot()
+    if autoRunning then return end
+    autoRunning = true
+    
+    connection = RunService.Heartbeat:Connect(function()
+        if not autoRunning or not Character or not HumanoidRootPart then return end
+        
+        findLootPrompts()  -- Refresh list
+        
+        for _, prompt in pairs(foundPrompts) do
+            if not autoRunning then break end
+            
+            local root = prompt.Parent
+            if not root then continue end
+            
+            local hrp = root:FindFirstChild("HumanoidRootPart") or root
+            local distance = (HumanoidRootPart.Position - hrp.Position).Magnitude
+            
+            -- Teleport if far
+            if distance > TP_DISTANCE then
+                HumanoidRootPart.CFrame = hrp.CFrame * CFrame.new(0, 0, -TP_DISTANCE)
+                task.wait(0.2)
+            end
+            
+            -- Trigger Prompt
+            if distance <= TP_DISTANCE + 10 then
+                pcall(function()
+                    prompt:InputHoldBegin()
+                    task.wait(0.1)
+                    prompt:InputHoldEnd()
+                end)
+                task.wait(TRIGGER_DELAY)
+            end
+        end
+    end)
+end
+
+local function stopAutoLoot()
+    autoRunning = false
+    if connection then
+        connection:Disconnect()
+        connection = nil
+    end
+end
+
+-- === UI (Simple Toggle) ===
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PromptESP"
+ScreenGui.Name = "AutoLootbox"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
 
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(0, 300, 0, 30)
-StatusLabel.Position = UDim2.new(0.5, -150, 0, 50)
-StatusLabel.BackgroundTransparency = 0.8
-StatusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-StatusLabel.Font = Enum.Font.SourceSansBold
-StatusLabel.TextSize = 18
-StatusLabel.Text = "ProximityPrompt ESP/Grabber: ACTIVE"
-StatusLabel.Parent = ScreenGui
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 250, 0, 120)
+Frame.Position = UDim2.new(0, 10, 0.5, -60)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
 
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0, 100, 0, 30)
-ToggleButton.Position = UDim2.new(0.5, 160, 0, 50)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.TextSize = 14
-ToggleButton.Text = "TOGGLE GLOBAL GRAB"
-ToggleButton.Parent = ScreenGui
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 12)
+Corner.Parent = Frame
 
-ToggleButton.MouseButton1Click:Connect(function()
-    Enabled = not Enabled
-    if Enabled then
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-        ToggleButton.Text = "TOGGLE GLOBAL GRAB"
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundColor3 = Color3.fromRGB(0, 140, 255)
+Title.Text = "AUTO LOOTBOX"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+Title.Parent = Frame
+
+local Corner2 = Instance.new("UICorner")
+Corner2.CornerRadius = UDim.new(0, 12)
+Corner2.Parent = Title
+
+local Toggle = Instance.new("TextButton")
+Toggle.Size = UDim2.new(0.8, 0, 0, 40)
+Toggle.Position = UDim2.new(0.1, 0, 0.4, 0)
+Toggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+Toggle.Text = "OFF"
+Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle.Font = Enum.Font.GothamBold
+Toggle.TextSize = 18
+Toggle.Parent = Frame
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 10)
+ToggleCorner.Parent = Toggle
+
+Toggle.MouseButton1Click:Connect(function()
+    if autoRunning then
+        stopAutoLoot()
+        Toggle.Text = "OFF"
+        Toggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        StarterGui:SetCore("SendNotification", {Title="Auto Loot", Text="Stopped", Duration=2})
     else
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-        ToggleButton.Text = "DISABLED"
+        startAutoLoot()
+        Toggle.Text = "ON"
+        Toggle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        StarterGui:SetCore("SendNotification", {Title="Auto Loot", Text="Started! Finding lootboxes...", Duration=3})
     end
 end)
 
--- === CORE FUNCTIONS ===
-
--- 1. PROMPT SCANNER (CRITICAL CHANGE: Added LootBox/Interact keywords)
-local function scanPrompts()
-    for _, data in ipairs(ProximityPrompts) do
-        if data.ESPLabel then data.ESPLabel:Destroy() end
-        if data.Line then data.Line:Destroy() end
-    end
-    ProximityPrompts = {}
-    
-    -- Keywords that suggest it gives an item or triggers a box/interaction
-    local targetKeywords = {"get", "take", "grab", "equip", "tool", "item", "spawn", "pick up", "loot", "box", "interact"}
-    
-    for _, descendant in ipairs(Workspace:GetDescendants()) do
-        if descendant:IsA("ProximityPrompt") then
-            local prompt = descendant
-            local toolName = "Loot/Action" -- Changed default name
-            local parent = prompt.Parent
-            local isToolGiver = false
-            
-            local promptText = prompt.ObjectText:lower()
-            local parentName = parent.Name:lower()
-
-            -- Method 1: Check if a Tool is present (highest priority)
-            local toolCandidate = parent:FindFirstChildOfClass("Tool")
-            if toolCandidate then
-                toolName = toolCandidate.Name
-                isToolGiver = true
-            else
-                -- Method 2: Check for Tool/Loot Keywords
-                local isKeywordMatch = false
-                for _, keyword in ipairs(targetKeywords) do
-                    if promptText:find(keyword) or parentName:find(keyword) then
-                        isKeywordMatch = true
-                        break
-                    end
-                end
-                
-                -- Anti-Keywords (Still avoids UI/Sleep actions)
-                if not (promptText:find("sleep") or promptText:find("craft") or promptText:find("store") or promptText:find("ui") or parentName:find("sleep") or parentName:find("craft") or parentName:find("store")) then
-                    
-                    if isKeywordMatch then
-                        isToolGiver = true
-                        -- Try to guess the name from attributes if keywords match
-                        local nameAttr = parent:GetAttribute("ToolName") or parent:GetAttribute("ItemName") or parent:GetAttribute("Tool")
-                        if nameAttr and type(nameAttr) == "string" and nameAttr ~= "" then
-                            toolName = nameAttr
-                        elseif promptText:find("lootbox") or promptText:find("chest") then
-                            toolName = "LootBox/Chest"
-                        end
-                    end
-                end
-            end
-            
-            -- Only include the Prompt if it is highly likely to be a Tool/Loot Giver
-            if isToolGiver then
-                 table.insert(ProximityPrompts, {
-                    Prompt = prompt,
-                    ToolName = toolName, 
-                    ESPLabel = nil,
-                    Line = nil
-                })
-            end
-        end
-    end
-    
-    for _, data in ipairs(ProximityPrompts) do
-        createESP(data)
-    end
-    
-    StatusLabel.Text = "Prompts Found: " .. #ProximityPrompts .. " | Auto Grab: " .. (Enabled and "ON" or "OFF")
-end
-
--- 2. ESP/VISUALS (Unchanged)
-local function createESP(promptData)
-    local prompt = promptData.Prompt
-    local parent = prompt.Parent
-    
-    local adornee = parent:IsA("BasePart") and parent or (parent.PrimaryPart or parent)
-    if not adornee:IsA("BasePart") then return end
-    
-    local Billboard = Instance.new("BillboardGui")
-    Billboard.Size = UDim2.new(0, 200, 0, 40)
-    Billboard.AlwaysOnTop = true
-    Billboard.ExtentsOffset = Vector3.new(0, 5, 0)
-    Billboard.Adornee = adornee
-    Billboard.Parent = PlayerGui
-
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, 0, 1, 0)
-    Label.BackgroundTransparency = 0.5 
-    Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Label.TextColor3 = Color3.fromRGB(0, 255, 255) 
-    Label.Font = Enum.Font.SourceSansBold
-    Label.TextSize = 16
-    Label.Text = string.format("[GLOBAL GRAB] TARGET: %s", promptData.ToolName) -- Updated text
-    Label.Parent = Billboard
-    
-    local Line = Instance.new("Part")
-    Line.BrickColor = BrickColor.new("Bright yellow")
-    Line.Material = Enum.Material.ForceField
-    Line.Anchored = true
-    Line.CanCollide = false
-    Line.Size = Vector3.new(0.1, 0.1, 0.1)
-    Line.Parent = Workspace
-    Line.Transparency = 0.5
-
-    promptData.ESPLabel = Billboard
-    promptData.Line = Line
-end
-
-local function updateESP()
-    local Camera = Workspace.CurrentCamera
-    if not Camera or not Character or not Character:FindFirstChild("HumanoidRootPart") then return end
-    local HRP = Character.HumanoidRootPart
-    
-    for _, data in ipairs(ProximityPrompts) do
-        local prompt = data.Prompt
-        local line = data.Line
-        
-        if prompt.Parent and prompt.Parent.PrimaryPart and data.ESPLabel then
-            local targetPos = prompt.Parent.PrimaryPart.Position
-            local dist = (targetPos - HRP.Position).Magnitude
-            
-            if line then
-                local center = (HRP.Position + targetPos) / 2
-                local magnitude = (HRP.Position - targetPos).Magnitude
-                
-                line.CFrame = CFrame.lookAt(center, targetPos) * CFrame.new(0, 0, -magnitude / 2)
-                line.Size = Vector3.new(0.1, 0.1, magnitude)
-                line.Transparency = math.min(0.5, dist / 150)
-            end
-        else
-            if data.ESPLabel then data.ESPLabel:Destroy() end
-            if data.Line then data.Line:Destroy() end
-        end
-    end
-end
-
--- 3. AUTO-GRAB/TRIGGER (Range Bypass - Unchanged)
-local function globalTrigger()
-    if not Enabled then return end
-    
-    local grabbedCount = 0
-    
-    for _, data in ipairs(ProximityPrompts) do
-        local prompt = data.Prompt
-        
-        if prompt.Parent and prompt.Enabled and prompt.Triggered:Wait(0.05) == nil then
-            
-            -- BYPASS RANGE CHECK
-            pcall(function()
-                 prompt:InputHoldEnd() 
-            end)
-            grabbedCount = grabbedCount + 1
-            
-            StarterGui:SetCore("SendNotification", {
-                Title="GLOBAL GRAB", 
-                Text="Triggered: " .. data.ToolName, 
-                Duration=1.5
-            })
-            
-            task.wait(0.01)
-        end
-    end
-
-    if grabbedCount > 0 then
-        StatusLabel.Text = "TRIGGERED " .. grabbedCount .. " PROMPTS GLOBALLY!"
-    end
-end
-
--- === EXECUTION LOOP ===
-task.spawn(function()
-    while task.wait(5) do
-        scanPrompts() 
-    end
+-- === AUTO START ON RESPAWN ===
+Player.CharacterAdded:Connect(function(char)
+    Character = char
+    HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
 end)
 
-RunService.Heartbeat:Connect(function()
-    updateESP()
-    if Enabled then
-        globalTrigger()
-    end
-end)
-
+-- === NOTIFICATION ===
 StarterGui:SetCore("SendNotification", {
-    Title="PROMPT GRABBER v7.4", 
-    Text="Now targeting LootBoxes and all item-giving Prompts globally!", 
-    Duration=6
+    Title = "SELDA RP Auto Lootbox";
+    Text = "Loaded! Toggle ON to start.";
+    Duration = 5;
 })
