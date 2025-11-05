@@ -15,7 +15,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- === CONFIG ===
 local SEARCH_KEYWORDS = {"lootbox", "chest", "loot", "treasure", "box", "crate"}  -- Add more if needed
-local TP_DISTANCE = 0  -- Distance to stand before triggering
+local TP_DISTANCE = 1  -- Distance to stand before triggering
 local TRIGGER_DELAY = 0.1  -- Delay between triggers
 local MAX_RANGE = 1000  -- Max search distance
 
