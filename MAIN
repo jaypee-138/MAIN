@@ -17,7 +17,7 @@ task.wait(3)
 -- === CONFIG ===
 local SEARCH_KEYWORDS = {"lootbox", "chest", "loot", "treasure", "box", "crate", "vault", "safe"}
 local TP_OFFSET = Vector3.new(0, 5, 0)  -- TP above the prompt to avoid clipping
-local TRIGGER_DELAY = 0.15
+local TRIGGER_DELAY = 0
 local SCAN_INTERVAL = 1.5
 
 -- === VARIABLES ===
