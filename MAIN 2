@@ -1,78 +1,29 @@
--- SYNDICATE UI v1.0 - BLUE & BLACK THEME
--- ✅ Live Keybind System - Works anywhere in game
--- ✅ Custom Rebinding - Change any key you want
--- ✅ Visual Feedback - Shows current key on button
--- ✅ Instant Updates - No need to reload
--- ✅ Notification - Shows when keybind changed 
--- Pwede mo na i-customize lahat ng keybinds mo! Just go to Settings tab! 🚀
--- Modern UI Library
--- 🔥 FIX: Mobile & Universal UI Scaling Implemented! 🔥
+-- SYNDICATE V1 - Blue & Black Theme
+-- Complete UI with Full Keybind System
+-- All features working!
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
 local Player = Players.LocalPlayer
 
--- === KEYBIND SYSTEM DATA & FUNCTIONS (NEW) ===
-local Keybinds = {
-    -- Default Keybinds: KeyCode value, then a function to call
-    ["ToggleUI"] = {Key = Enum.KeyCode.RightShift, Callback = function() 
-        return function() 
-            -- Functionality will be added later in the Control section
-        end 
-    end, Desc = "Toggle the main UI visibility."},
-    ["FlyToggle"] = {Key = Enum.KeyCode.F, Callback = function() end, Desc = "Toggle Fly feature (Main Tab)."},
-    ["SpeedToggle"] = {Key = Enum.KeyCode.G, Callback = function() end, Desc = "Toggle Speed feature (Main Tab)."},
-    -- Add more keybinds here as you add more features
+-- Keybinds Storage
+local keybinds = {
+    Fly = Enum.KeyCode.F,
+    Speed = Enum.KeyCode.G,
+    Jump = Enum.KeyCode.H,
+    Noclip = Enum.KeyCode.N,
+    ESP = Enum.KeyCode.E,
+    Wallbang = Enum.KeyCode.B
 }
 
-local KeybindActive = {} -- To store active keybinds for instantaneous checks
-
--- Function to save keybinds (simplified for local use)
-local function saveKeybinds()
-    -- In a real execution environment, you would save this to a file/datastore.
-    -- For now, it just updates the local table.
-end
-
--- Function to load keybinds (optional, for persistent local session)
-local function loadKeybinds()
-    -- Load logic here if needed.
-end
-
--- Function to update the KeybindActive table (for fast checking)
-local function updateKeybindActive()
-    KeybindActive = {}
-    for name, data in pairs(Keybinds) do
-        KeybindActive[data.Key] = {Name = name, Callback = data.Callback}
-    end
-end
-
--- Main keybind listener (Works anywhere in game)
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    
-    local keyData = KeybindActive[input.KeyCode]
-    if keyData and not main.Visible then -- Only trigger if UI is hidden (except for the toggle itself)
-        -- Call the keybind's associated function
-        -- NOTE: The callback needs to be the inner function for ToggleUI to work immediately.
-        if keyData.Name == "ToggleUI" then
-            keyData.Callback()() -- Call the outer function to get the inner function, then call the inner function.
-        elseif keyData.Name == "FlyToggle" or keyData.Name == "SpeedToggle" then 
-            -- Check if the corresponding feature is implemented before calling
-             keyData.Callback()
-        end
-    end
-end)
-
-updateKeybindActive() -- Initial population of the active table
-
--- === GUI SETUP (WITH SCALING FIXES) ===
+-- Feature States
+local fly, speed, jump, noclip, esp, wallbang = false, false, false, false, false, false
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "SYNDICATE_UI_V1" -- Name check: OK
+gui.Name = "SYNDICATE_V1"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -85,77 +36,38 @@ else
     gui.Parent = Player:WaitForChild("PlayerGui")
 end
 
--- MAIN FRAME (FIXED: Using Scale and AnchorPoint for centering and responsiveness)
+-- MAIN FRAME
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.Size = UDim2.new(0.65, 0, 0.75, 0) -- 65% of screen width, 75% of screen height
-main.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centered
-main.AnchorPoint = Vector2.new(0.5, 0.5) -- Pivot point is center
+main.Size = UDim2.new(0, 700, 0, 450)
+main.Position = UDim2.new(0.5, -350, 0.5, -225)
 main.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
 main.BorderSizePixel = 0
 main.Parent = gui
 
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 15)
 
--- Aspect Ratio Constraint (NEW: Ensures the UI shape is maintained on all screens)
-local aspectRatio = Instance.new("UIAspectRatioConstraint")
-aspectRatio.AspectRatio = 700/450 -- Original ratio (700 wide / 450 high)
-aspectRatio.AspectType = Enum.AspectType.FitWithinIt
-aspectRatio.DominantAxis = Enum.DominantAxis.Width -- Maintain width as dominant
-aspectRatio.Parent = main
-
-
--- Shadow Effect (Unchanged)
-local shadow = Instance.new("ImageLabel")
-shadow.Name = "Shadow"
-shadow.BackgroundTransparency = 1
-shadow.Position = UDim2.new(0, -15, 0, -15)
-shadow.Size = UDim2.new(1, 30, 1, 30)
-shadow.ZIndex = 0
-shadow.Image = "rbxassetid://6015897843"
-shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-shadow.ImageTransparency = 0.4
-shadow.ScaleType = Enum.ScaleType.Slice
-shadow.SliceCenter = Rect.new(49, 49, 450, 450)
-shadow.Parent = main
-
--- TOP BAR (FIXED: Using Scale for height)
+-- TOP BAR
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0.166, 0) -- ~16.6% (75/450) of total height
+topBar.Size = UDim2.new(1, 0, 0, 75)
 topBar.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 topBar.BorderSizePixel = 0
 topBar.Parent = main
 
 Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 15)
 
--- Blue Accent Line (Unchanged, but height is based on Scale)
-local accentLine = Instance.new("Frame")
-accentLine.Size = UDim2.new(1, 0, 0, 3)
-accentLine.Position = UDim2.new(0, 0, 1, -3)
-accentLine.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-accentLine.BorderSizePixel = 0
-accentLine.Parent = topBar
+-- Blue Accent
+local accent = Instance.new("Frame")
+accent.Size = UDim2.new(1, 0, 0, 3)
+accent.Position = UDim2.new(0, 0, 1, -3)
+accent.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+accent.BorderSizePixel = 0
+accent.Parent = topBar
 
-local accentGradient = Instance.new("UIGradient")
-accentGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 255)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 200, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255))
-}
-accentGradient.Parent = accentLine
-
-spawn(function()
-    while accentLine.Parent do
-        accentGradient.Rotation = accentGradient.Rotation + 1
-        task.wait(0.05)
-    end
-end)
-
--- PFP, Status, Display Name, Username (Using UILayout and Scale for better positioning)
+-- PFP
 local pfp = Instance.new("ImageLabel")
-pfp.Size = UDim2.new(0, 50, 0.7, 0) -- 50px width, 70% of TopBar height (roughly)
-pfp.Position = UDim2.new(0, 15, 0.5, 0)
-pfp.AnchorPoint = Vector2.new(0, 0.5) -- Fixed position relative to center of topBar
+pfp.Size = UDim2.new(0, 50, 0, 50)
+pfp.Position = UDim2.new(0, 15, 0, 12)
 pfp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 pfp.BorderSizePixel = 0
 pfp.Parent = topBar
@@ -171,22 +83,32 @@ pcall(function()
     pfp.Image = Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
 end)
 
--- Removed status frame for simplicity and to prevent overflow on mobile.
+-- Status
+local status = Instance.new("Frame")
+status.Size = UDim2.new(0, 14, 0, 14)
+status.Position = UDim2.new(1, -12, 1, -12)
+status.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+status.BorderSizePixel = 0
+status.Parent = pfp
 
+Instance.new("UICorner", status).CornerRadius = UDim.new(1, 0)
+
+-- Display Name
 local displayName = Instance.new("TextLabel")
-displayName.Size = UDim2.new(0.4, 0, 0.3, 0) -- 40% width, 30% height of topBar
-displayName.Position = UDim2.new(0, 73, 0.25, 0)
+displayName.Size = UDim2.new(0, 300, 0, 22)
+displayName.Position = UDim2.new(0, 73, 0, 16)
 displayName.BackgroundTransparency = 1
 displayName.Font = Enum.Font.GothamBold
 displayName.Text = Player.DisplayName
 displayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-displayName.TextSize = 16 -- Consider using TextScaled = true for mobile, but keeping for now.
+displayName.TextSize = 16
 displayName.TextXAlignment = Enum.TextXAlignment.Left
 displayName.Parent = topBar
 
+-- Username
 local username = Instance.new("TextLabel")
-username.Size = UDim2.new(0.4, 0, 0.2, 0) -- 40% width, 20% height of topBar
-username.Position = UDim2.new(0, 73, 0.55, 0)
+username.Size = UDim2.new(0, 300, 0, 18)
+username.Position = UDim2.new(0, 73, 0, 38)
 username.BackgroundTransparency = 1
 username.Font = Enum.Font.Gotham
 username.Text = "@" .. Player.Name
@@ -195,25 +117,21 @@ username.TextSize = 12
 username.TextXAlignment = Enum.TextXAlignment.Left
 username.Parent = topBar
 
--- Title with Glow Effect (FIXED: Using Scale for Position)
+-- Title
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0.3, 0, 1, 0) -- 30% width
-title.Position = UDim2.new(0.6, 0, 0, 0) -- Start at 60% of the frame
+title.Size = UDim2.new(0, 200, 0, 75)
+title.Position = UDim2.new(1, -210, 0, 0)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
-title.Text = "SYNDICATE V1" -- Name check: OK
+title.Text = "SYNDICATE"
 title.TextColor3 = Color3.fromRGB(0, 180, 255)
-title.TextSize = 24 -- Adjusted size
-title.TextStrokeTransparency = 0.8
-title.TextStrokeColor3 = Color3.fromRGB(0, 150, 255)
-title.TextXAlignment = Enum.TextXAlignment.Right -- Align to right to prevent text overflow on the left
+title.TextSize = 24
 title.Parent = topBar
 
--- Close Button (FIXED: Using Scale for position)
+-- Close Button
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -42, 0.5, 0) -- Aligned to the top right
-closeBtn.AnchorPoint = Vector2.new(0, 0.5)
+closeBtn.Position = UDim2.new(1, -42, 0, 20)
 closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 80)
 closeBtn.BackgroundTransparency = 0.2
 closeBtn.BorderSizePixel = 0
@@ -225,18 +143,10 @@ closeBtn.Parent = topBar
 
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
-closeBtn.MouseEnter:Connect(function()
-    TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
-end)
-closeBtn.MouseLeave:Connect(function()
-    TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
-end)
-
--- Minimize Button (FIXED: Using Scale for position)
+-- Minimize Button
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 35, 0, 35)
-minBtn.Position = UDim2.new(1, -80, 0.5, 0) -- Positioned next to closeBtn
-minBtn.AnchorPoint = Vector2.new(0, 0.5)
+minBtn.Position = UDim2.new(1, -80, 0, 20)
 minBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 minBtn.BackgroundTransparency = 0.2
 minBtn.BorderSizePixel = 0
@@ -248,27 +158,15 @@ minBtn.Parent = topBar
 
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 8)
 
-minBtn.MouseEnter:Connect(function()
-    TweenService:Create(minBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
-end)
-minBtn.MouseLeave:Connect(function()
-    TweenService:Create(minBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
-end)
-
--- Tabs Container (FIXED: Using Scale and padding calculation)
+-- Tabs Container
 local tabs = Instance.new("Frame")
-tabs.Size = UDim2.new(0.23, 0, 1, -85) -- Approx 23% width, 100% height - topBar height (75px + 10px spacing)
-tabs.Position = UDim2.new(0, 8, 0, 80) -- 8px from left, 80px from top (75px TopBar + 5px spacing)
+tabs.Size = UDim2.new(0, 160, 1, -85)
+tabs.Position = UDim2.new(0, 8, 0, 80)
 tabs.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 tabs.BorderSizePixel = 0
 tabs.Parent = main
 
 Instance.new("UICorner", tabs).CornerRadius = UDim.new(0, 12)
-
-local tabStroke = Instance.new("UIStroke")
-tabStroke.Color = Color3.fromRGB(30, 30, 40)
-tabStroke.Thickness = 1
-tabStroke.Parent = tabs
 
 local tabLayout = Instance.new("UIListLayout")
 tabLayout.Padding = UDim.new(0, 6)
@@ -280,32 +178,26 @@ tabPadding.PaddingLeft = UDim.new(0, 10)
 tabPadding.PaddingRight = UDim.new(0, 10)
 tabPadding.Parent = tabs
 
--- Content Container (FIXED: Using Scale)
+-- Content Container
 local content = Instance.new("Frame")
-content.Size = UDim2.new(0.77, -15, 1, -85) -- Remaining width (77%) minus 15px total spacing (8px left gap + 7px right gap)
-content.Position = UDim2.new(0.23, 16, 0, 80) -- Start after tabs (23% width + 16px total spacing)
+content.Size = UDim2.new(1, -183, 1, -85)
+content.Position = UDim2.new(0, 173, 0, 80)
 content.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 content.BorderSizePixel = 0
 content.Parent = main
 
 Instance.new("UICorner", content).CornerRadius = UDim.new(0, 12)
 
-local contentStroke = Instance.new("UIStroke")
-contentStroke.Color = Color3.fromRGB(30, 30, 40)
-contentStroke.Thickness = 1
-contentStroke.Parent = content
-
--- Minimized Frame (FIXED: Using Scale for position)
+-- Minimized Frame
 local minFrame = Instance.new("TextButton")
-minFrame.Size = UDim2.new(0, 130, 0, 45) -- Kept Offset size, but position is relative to screen
-minFrame.Position = UDim2.new(0.9, 0, 0.1, 0) -- Top right corner (90% width, 10% height)
-minFrame.AnchorPoint = Vector2.new(1, 0) -- Anchor at top right
+minFrame.Size = UDim2.new(0, 120, 0, 45)
+minFrame.Position = UDim2.new(0.5, -60, 0.5, -22)
 minFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 minFrame.BorderSizePixel = 0
 minFrame.Font = Enum.Font.GothamBold
-minFrame.Text = "SYNDICATE V1" -- Name check: OK
+minFrame.Text = "SYNDICATE"
 minFrame.TextColor3 = Color3.fromRGB(0, 180, 255)
-minFrame.TextSize = 16
+minFrame.TextSize = 18
 minFrame.Visible = false
 minFrame.Active = true
 minFrame.Draggable = true
@@ -313,59 +205,27 @@ minFrame.Parent = gui
 
 Instance.new("UICorner", minFrame).CornerRadius = UDim.new(0, 12)
 
-local minFrameStroke = Instance.new("UIStroke")
-minFrameStroke.Color = Color3.fromRGB(0, 150, 255)
-minFrameStroke.Thickness = 2
-minFrameStroke.Parent = minFrame
+local minStroke = Instance.new("UIStroke")
+minStroke.Color = Color3.fromRGB(0, 150, 255)
+minStroke.Thickness = 2
+minStroke.Parent = minFrame
 
--- Controls (Updated minBtn and closeBtn logic)
-local isVisible = true
-
+-- Controls
 minBtn.MouseButton1Click:Connect(function()
-    isVisible = not isVisible
-    main.Visible = isVisible
-    minFrame.Visible = not isVisible
-    if not isVisible then
-        -- Updated position: Moves to the top right corner (0.9, 0.1)
-        TweenService:Create(minFrame, TweenInfo.new(0.3), {Position = UDim2.new(0.9, 0, 0.1, 0)}):Play()
-    else
-        -- Updated position: Moves back to center (0.5, 0.5) with AnchorPoint 0.5, 0.5
-        TweenService:Create(main, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-    end
+    main.Visible = false
+    minFrame.Visible = true
 end)
 
 minFrame.MouseButton1Click:Connect(function()
-    isVisible = true
     main.Visible = true
     minFrame.Visible = false
-    -- Updated position: Moves back to center (0.5, 0.5)
-    TweenService:Create(main, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
-    -- Smooth exit below the screen, regardless of size
-    TweenService:Create(main, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 1.5, 0)}):Play()
-    task.wait(0.3)
     gui:Destroy()
 end)
 
--- ToggleUI Keybind implementation
-Keybinds.ToggleUI.Callback = function()
-    return function()
-        isVisible = not isVisible
-        main.Visible = isVisible
-        minFrame.Visible = not isVisible
-        if not isVisible then
-            -- Updated position: Moves to the top right corner (0.9, 0.1)
-            TweenService:Create(minFrame, TweenInfo.new(0.3), {Position = UDim2.new(0.9, 0, 0.1, 0)}):Play()
-        else
-            -- Updated position: Moves back to center (0.5, 0.5)
-            TweenService:Create(main, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-        end
-    end
-end
-
--- Dragging (FIXED: Dragging works with the new central position)
+-- Dragging
 local dragging, dragInput, dragStart, startPos
 
 topBar.InputBegan:Connect(function(input)
@@ -385,15 +245,11 @@ end)
 UIS.InputChanged:Connect(function(input)
     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
-        main.Position = UDim2.new(
-            0, startPos.X.Offset + delta.X, -- Use Offset for actual drag
-            0, startPos.Y.Offset + delta.Y
-        )
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
--- NOTE on Dragging: Dragging will temporarily override the Scale position, but using AnchorPoint = 0, 0 and then moving it to 0.5, 0.5 on the start of the drag is a cleaner solution, but I kept the original logic and fixed the initial main.Position value.
 
--- Tab System (Tab logic unchanged, but inner components might need minor scale adjustments later)
+-- Clear Content Function
 local function clearContent()
     for _, v in pairs(content:GetChildren()) do
         if v:IsA("GuiObject") then
@@ -402,9 +258,10 @@ local function clearContent()
     end
 end
 
+-- Make Tab Function
 local function makeTab(name, icon, order)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 42) -- Kept Offset for button height, this is usually acceptable
+    btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     btn.BorderSizePixel = 0
     btn.Font = Enum.Font.GothamBold
@@ -427,38 +284,17 @@ local function makeTab(name, icon, order)
     btnStroke.Transparency = 1
     btnStroke.Parent = btn
     
-    btn.MouseEnter:Connect(function()
-        if btn.BackgroundColor3 ~= Color3.fromRGB(0, 120, 255) then
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}):Play()
-        end
-    end)
-    
-    btn.MouseLeave:Connect(function()
-        if btn.BackgroundColor3 ~= Color3.fromRGB(0, 120, 255) then
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20, 20, 30)}):Play()
-        end
-    end)
-    
     return btn, btnStroke
 end
 
 local homeTab, homeStroke = makeTab("Home", "🏠", 1)
-local scriptsTab, scriptsStroke = makeTab("Scripts", "📜", 2)
-local mainTab, mainStroke = makeTab("Main", "⚡", 3)
-local utilsTab, utilsStroke = makeTab("Utilities", "🔧", 4)
-local settingsTab, settingsStroke = makeTab("Settings", "⚙️", 5)
-local extrasTab, extrasStroke = makeTab("Extras", "✨", 6)
+local mainTab, mainStroke = makeTab("Main", "⚡", 2)
+local settingsTab, settingsStroke = makeTab("Settings", "⚙️", 3)
 
--- Get player count (Unchanged)
-local function getPlayerCount()
-    return #Players:GetPlayers()
-end
-
--- HOME TAB (Minor positioning tweaks to utilize Scale better)
+-- HOME TAB
 homeTab.MouseButton1Click:Connect(function()
     clearContent()
     
-    -- Update all tabs
     for _, tab in pairs(tabs:GetChildren()) do
         if tab:IsA("TextButton") then
             tab.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
@@ -473,247 +309,64 @@ homeTab.MouseButton1Click:Connect(function()
     homeStroke.Transparency = 0
     homeStroke.Color = Color3.fromRGB(0, 180, 255)
     
-    -- Welcome Card
-    local welcomeCard = Instance.new("Frame")
-    welcomeCard.Size = UDim2.new(1, -20, 0.25, 0) -- 25% height of content
-    welcomeCard.Position = UDim2.new(0, 10, 0, 10)
-    welcomeCard.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    welcomeCard.BorderSizePixel = 0
-    welcomeCard.Parent = content
+    local welcome = Instance.new("Frame")
+    welcome.Size = UDim2.new(1, -20, 0, 100)
+    welcome.Position = UDim2.new(0, 10, 0, 10)
+    welcome.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    welcome.BorderSizePixel = 0
+    welcome.Parent = content
     
-    Instance.new("UICorner", welcomeCard).CornerRadius = UDim.new(0, 12)
+    Instance.new("UICorner", welcome).CornerRadius = UDim.new(0, 12)
     
     local welcomeStroke = Instance.new("UIStroke")
     welcomeStroke.Color = Color3.fromRGB(0, 150, 255)
     welcomeStroke.Thickness = 1.5
-    welcomeStroke.Parent = welcomeCard
-    
-    local welcomeGradient = Instance.new("UIGradient")
-    welcomeGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 30)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 50, 100))
-    }
-    welcomeGradient.Rotation = 45
-    welcomeGradient.Parent = welcomeCard
+    welcomeStroke.Parent = welcome
     
     local welcomeTitle = Instance.new("TextLabel")
-    welcomeTitle.Size = UDim2.new(1, -20, 0.3, 0) -- 30% of card height
-    welcomeTitle.Position = UDim2.new(0, 10, 0.15, 0)
+    welcomeTitle.Size = UDim2.new(1, -20, 0, 30)
+    welcomeTitle.Position = UDim2.new(0, 10, 0, 15)
     welcomeTitle.BackgroundTransparency = 1
     welcomeTitle.Font = Enum.Font.GothamBold
-    welcomeTitle.Text = "👋 Welcome back, " .. Player.DisplayName .. "!"
+    welcomeTitle.Text = "👋 Welcome, " .. Player.DisplayName .. "!"
     welcomeTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     welcomeTitle.TextSize = 16
     welcomeTitle.TextXAlignment = Enum.TextXAlignment.Left
-    welcomeTitle.Parent = welcomeCard
+    welcomeTitle.Parent = welcome
     
     local welcomeDesc = Instance.new("TextLabel")
-    welcomeDesc.Size = UDim2.new(1, -20, 0.4, 0) -- 40% of card height
-    welcomeDesc.Position = UDim2.new(0, 10, 0.45, 0)
+    welcomeDesc.Size = UDim2.new(1, -20, 0, 40)
+    welcomeDesc.Position = UDim2.new(0, 10, 0, 50)
     welcomeDesc.BackgroundTransparency = 1
     welcomeDesc.Font = Enum.Font.Gotham
-    welcomeDesc.Text = "SYNDICATE V1.0 loaded successfully!\nAll features unlocked and ready to use."
+    welcomeDesc.Text = "SYNDICATE V1 loaded!\nPlayers in server: " .. #Players:GetPlayers()
     welcomeDesc.TextColor3 = Color3.fromRGB(150, 180, 255)
     welcomeDesc.TextSize = 12
     welcomeDesc.TextXAlignment = Enum.TextXAlignment.Left
     welcomeDesc.TextYAlignment = Enum.TextYAlignment.Top
-    welcomeDesc.Parent = welcomeCard
+    welcomeDesc.Parent = welcome
     
-    -- Stats Container
-    local statsContainer = Instance.new("Frame")
-    statsContainer.Size = UDim2.new(1, -20, 0.65, 0) -- 65% height of content
-    statsContainer.Position = UDim2.new(0, 10, 0.25, 20) -- Starts after welcomeCard (25% + 20px total spacing)
-    statsContainer.BackgroundTransparency = 1
-    statsContainer.Parent = content
+    local info = Instance.new("TextLabel")
+    info.Size = UDim2.new(1, -20, 1, -120)
+    info.Position = UDim2.new(0, 10, 0, 115)
+    info.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    info.BorderSizePixel = 0
+    info.Font = Enum.Font.Gotham
+    info.Text = "📊 Status: Active\n✅ All Features: Unlocked\n⌨️ Keybinds: Customizable\n🔒 Protected: Yes"
+    info.TextColor3 = Color3.fromRGB(150, 180, 255)
+    info.TextSize = 12
+    info.TextYAlignment = Enum.TextYAlignment.Top
+    info.Parent = content
     
-    local statsLayout = Instance.new("UIGridLayout")
-    statsLayout.CellSize = UDim2.new(0.48, 0, 0.48, 0) -- Fixed to Scale for better responsiveness
-    statsLayout.CellPadding = UDim2.new(0.04, 0, 0.04, 0)
-    statsLayout.Parent = statsContainer
+    Instance.new("UICorner", info).CornerRadius = UDim.new(0, 12)
     
-    -- Stat Card Function (Using Scale)
-    local function createStatCard(title, value, icon, color)
-        local card = Instance.new("Frame")
-        card.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-        card.BorderSizePixel = 0
-        card.Parent = statsContainer
-        
-        Instance.new("UICorner", card).CornerRadius = UDim.new(0, 12)
-        
-        local cardStroke = Instance.new("UIStroke")
-        cardStroke.Color = color
-        cardStroke.Thickness = 1.5
-        cardStroke.Parent = card
-        
-        local iconLabel = Instance.new("TextLabel")
-        iconLabel.Size = UDim2.new(0.25, 0, 0.45, 0)
-        iconLabel.Position = UDim2.new(0, 15, 0.25, 0)
-        iconLabel.BackgroundTransparency = 1
-        iconLabel.Font = Enum.Font.GothamBold
-        iconLabel.Text = icon
-        iconLabel.TextColor3 = color
-        iconLabel.TextSize = 28
-        iconLabel.Parent = card
-        
-        local valueLabel = Instance.new("TextLabel")
-        valueLabel.Size = UDim2.new(0.65, 0, 0.3, 0)
-        valueLabel.Position = UDim2.new(0.3, 0, 0.2, 0)
-        valueLabel.BackgroundTransparency = 1
-        valueLabel.Font = Enum.Font.GothamBold
-        valueLabel.Text = value
-        valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        valueLabel.TextSize = 22
-        valueLabel.TextXAlignment = Enum.TextXAlignment.Left
-        valueLabel.Parent = card
-        
-        local titleLabel = Instance.new("TextLabel")
-        titleLabel.Size = UDim2.new(0.65, 0, 0.2, 0)
-        titleLabel.Position = UDim2.new(0.3, 0, 0.5, 0)
-        titleLabel.BackgroundTransparency = 1
-        titleLabel.Font = Enum.Font.Gotham
-        titleLabel.Text = title
-        titleLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
-        titleLabel.TextSize = 11
-        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        titleLabel.Parent = card
-        
-        return card, valueLabel
-    end
-    
-    local playerCard, playerValue = createStatCard("Players in Server", tostring(getPlayerCount()), "👥", Color3.fromRGB(0, 200, 100))
-    local statusCard = createStatCard("Status", "Active", "✅", Color3.fromRGB(0, 150, 255))
-    local featuresCard = createStatCard("Features", "All Unlocked", "⚡", Color3.fromRGB(255, 200, 0))
-    local securityCard = createStatCard("Security", "Protected", "🔒", Color3.fromRGB(150, 50, 255))
-    
-    -- Update player count
-    spawn(function()
-        while playerCard.Parent do
-            playerValue.Text = tostring(getPlayerCount())
-            task.wait(2)
-        end
-    end)
+    local infoPad = Instance.new("UIPadding")
+    infoPad.PaddingLeft = UDim.new(0, 15)
+    infoPad.PaddingTop = UDim.new(0, 15)
+    infoPad.Parent = info
 end)
 
--- SCRIPTS TAB (Unchanged logic, uses Scale for ScrollingFrame)
-scriptsTab.MouseButton1Click:Connect(function()
-    clearContent()
-    
-    for _, tab in pairs(tabs:GetChildren()) do
-        if tab:IsA("TextButton") then
-            tab.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-            tab.TextColor3 = Color3.fromRGB(150, 150, 170)
-            local stroke = tab:FindFirstChildOfClass("UIStroke")
-            if stroke then stroke.Transparency = 1 end
-        end
-    end
-    
-    scriptsTab.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-    scriptsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-    scriptsStroke.Transparency = 0
-    scriptsStroke.Color = Color3.fromRGB(0, 180, 255)
-    
-    local scroll = Instance.new("ScrollingFrame")
-    scroll.Size = UDim2.new(1, -10, 1, -10)
-    scroll.Position = UDim2.new(0, 5, 0, 5)
-    scroll.BackgroundTransparency = 1
-    scroll.BorderSizePixel = 0
-    scroll.ScrollBarThickness = 5
-    scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
-    scroll.Parent = content
-    
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 8)
-    layout.Parent = scroll
-    
-    local function addScriptBtn(name, desc, callback)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -8, 0, 65)
-        btn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-        btn.BorderSizePixel = 0
-        btn.AutoButtonColor = false
-        btn.Parent = scroll
-        
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
-        
-        local btnStroke = Instance.new("UIStroke")
-        btnStroke.Color = Color3.fromRGB(0, 100, 200)
-        btnStroke.Thickness = 1.5
-        btnStroke.Parent = btn
-        
-        local btnTitle = Instance.new("TextLabel")
-        btnTitle.Size = UDim2.new(1, -20, 0, 22)
-        btnTitle.Position = UDim2.new(0, 10, 0, 10)
-        btnTitle.BackgroundTransparency = 1
-        btnTitle.Font = Enum.Font.GothamBold
-        btnTitle.Text = name
-        btnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-        btnTitle.TextSize = 13
-        btnTitle.TextXAlignment = Enum.TextXAlignment.Left
-        btnTitle.Parent = btn
-        
-        local btnDesc = Instance.new("TextLabel")
-        btnDesc.Size = UDim2.new(1, -20, 0, 18)
-        btnDesc.Position = UDim2.new(0, 10, 0, 35)
-        btnDesc.BackgroundTransparency = 1
-        btnDesc.Font = Enum.Font.Gotham
-        btnDesc.Text = desc
-        btnDesc.TextColor3 = Color3.fromRGB(150, 150, 170)
-        btnDesc.TextSize = 10
-        btnDesc.TextXAlignment = Enum.TextXAlignment.Left
-        btnDesc.Parent = btn
-        
-        btn.MouseEnter:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(0, 150, 255)}):Play()
-        end)
-        
-        btn.MouseLeave:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20, 20, 30)}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(0, 100, 200)}):Play()
-        end)
-        
-        btn.MouseButton1Click:Connect(callback)
-    end
-    
-    addScriptBtn("🎮 Infinite Yield", "Advanced command line executor", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end)
-    
-    addScriptBtn("🔫 Arsenal Script", "Aimbot, ESP, and more features", function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Arsenal Script";
-            Text = "Loading script...";
-            Duration = 2;
-        })
-    end)
-    
-    addScriptBtn("💰 Blox Fruits Script", "Auto farm, fast attack, and more", function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Blox Fruits";
-            Text = "Loading script...";
-            Duration = 2;
-        })
-    end)
-    
-    addScriptBtn("🏃 Speed Hub X", "Universal speed hub script", function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Speed Hub X";
-            Text = "Loading script...";
-            Duration = 2;
-        })
-    end)
-    
-    spawn(function()
-        while scroll.Parent do
-            scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
-            task.wait(0.1)
-        end
-    end)
-end)
-
--- MAIN TAB (Unchanged logic, uses Scale for ScrollingFrame)
-local fly, speed, jump, noclip, esp, wallbang = false, false, false, false, false, false
-
+-- MAIN TAB
 mainTab.MouseButton1Click:Connect(function()
     clearContent()
     
@@ -770,10 +423,8 @@ mainTab.MouseButton1Click:Connect(function()
         label.Parent = frame
         
         local toggle = Instance.new("TextButton")
-        toggle.Name = name:gsub(" ", ""):gsub("✈️", ""):gsub("🏃", ""):gsub("🦘", ""):gsub("👻", ""):gsub("👁️", ""):gsub("🧱", ""):gsub(":", "")
-        toggle.Size = UDim2.new(0.2, 0, 0.7, 0) -- Fixed to Scale (20% width, 70% height)
-        toggle.Position = UDim2.new(0.75, 0, 0.5, 0) -- Positioned using Scale
-        toggle.AnchorPoint = Vector2.new(0.5, 0.5) -- Centered vertically
+        toggle.Size = UDim2.new(0, 70, 0, 28)
+        toggle.Position = UDim2.new(1, -78, 0.5, -14)
         toggle.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
         toggle.BorderSizePixel = 0
         toggle.Font = Enum.Font.GothamBold
@@ -808,14 +459,12 @@ mainTab.MouseButton1Click:Connect(function()
                     while fly and hrp and hrp.Parent do
                         bg.CFrame = Workspace.CurrentCamera.CFrame
                         local move = Vector3.new()
-                        
                         if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + Workspace.CurrentCamera.CFrame.LookVector end
                         if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - Workspace.CurrentCamera.CFrame.LookVector end
                         if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - Workspace.CurrentCamera.CFrame.RightVector end
                         if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + Workspace.CurrentCamera.CFrame.RightVector end
                         if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
                         if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
-                        
                         bv.Velocity = move * 50
                         task.wait()
                     end
@@ -831,7 +480,6 @@ mainTab.MouseButton1Click:Connect(function()
         btn.Text = speed and "ON" or "OFF"
         btn.BackgroundColor3 = speed and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
         stroke.Color = speed and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
-        
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
             Player.Character.Humanoid.WalkSpeed = speed and 100 or 16
         end
@@ -842,7 +490,6 @@ mainTab.MouseButton1Click:Connect(function()
         btn.Text = jump and "ON" or "OFF"
         btn.BackgroundColor3 = jump and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
         stroke.Color = jump and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
-        
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
             Player.Character.Humanoid.JumpPower = jump and 150 or 50
         end
@@ -853,14 +500,11 @@ mainTab.MouseButton1Click:Connect(function()
         btn.Text = noclip and "ON" or "OFF"
         btn.BackgroundColor3 = noclip and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
         stroke.Color = noclip and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
-        
         spawn(function()
             while noclip do
                 if Player.Character then
                     for _, part in pairs(Player.Character:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
+                        if part:IsA("BasePart") then part.CanCollide = false end
                     end
                 end
                 task.wait()
@@ -873,19 +517,35 @@ mainTab.MouseButton1Click:Connect(function()
         btn.Text = esp and "ON" or "OFF"
         btn.BackgroundColor3 = esp and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
         stroke.Color = esp and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
-        
         if esp then
             for _, plr in pairs(Players:GetPlayers()) do
                 if plr ~= Player and plr.Character then
-                    -- ... rest of ESP implementation here
+                    local h = Instance.new("Highlight", plr.Character)
+                    h.FillColor = Color3.fromRGB(0, 150, 255)
                 end
             end
         else
-             -- ... cleanup ESP implementation here
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr.Character then
+                    local h = plr.Character:FindFirstChildOfClass("Highlight")
+                    if h then h:Destroy() end
+                end
+            end
         end
     end)
     
-    -- Final CanvasSize update
+    addToggle("🧱 Wallbang", function(btn, stroke)
+        wallbang = not wallbang
+        btn.Text = wallbang and "ON" or "OFF"
+        btn.BackgroundColor3 = wallbang and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
+        stroke.Color = wallbang and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide then
+                v.Transparency = wallbang and 0.7 or 0
+            end
+        end
+    end)
+    
     spawn(function()
         while scroll.Parent do
             scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
@@ -894,12 +554,270 @@ mainTab.MouseButton1Click:Connect(function()
     end)
 end)
 
--- Execute Home Tab on load (for a nice look)
-homeTab:SetAttribute("InitialLoad", true) -- Added a temporary attribute
-task.spawn(function()
-    task.wait(0.5) -- Give time for the UI to render
-    if homeTab:GetAttribute("InitialLoad") then
-        homeTab.MouseButton1Click:Fire()
-        homeTab:SetAttribute("InitialLoad", nil)
+-- SETTINGS TAB WITH KEYBINDS
+settingsTab.MouseButton1Click:Connect(function()
+    clearContent()
+    
+    for _, tab in pairs(tabs:GetChildren()) do
+        if tab:IsA("TextButton") then
+            tab.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+            tab.TextColor3 = Color3.fromRGB(150, 150, 170)
+            local stroke = tab:FindFirstChildOfClass("UIStroke")
+            if stroke then stroke.Transparency = 1 end
+        end
+    end
+    
+    settingsTab.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    settingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    settingsStroke.Transparency = 0
+    settingsStroke.Color = Color3.fromRGB(0, 180, 255)
+    
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Size = UDim2.new(1, -10, 1, -10)
+    scroll.Position = UDim2.new(0, 5, 0, 5)
+    scroll.BackgroundTransparency = 1
+    scroll.BorderSizePixel = 0
+    scroll.ScrollBarThickness = 5
+    scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    scroll.Parent = content
+    
+    local settingsLayout = Instance.new("UIListLayout")
+    settingsLayout.Padding = UDim.new(0, 10)
+    settingsLayout.Parent = scroll
+    
+    -- Info Card
+    local info = Instance.new("Frame")
+    info.Size = UDim2.new(1, -8, 0, 100)
+    info.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    info.BorderSizePixel = 0
+    info.Parent = scroll
+    
+    Instance.new("UICorner", info).CornerRadius = UDim.new(0, 12)
+    Instance.new("UIStroke", info).Color = Color3.fromRGB(0, 150, 255)
+    
+    local infoText = Instance.new("TextLabel")
+    infoText.Size = UDim2.new(1, -20, 1, -10)
+    infoText.Position = UDim2.new(0, 10, 0, 5)
+    infoText.BackgroundTransparency = 1
+    infoText.Font = Enum.Font.Gotham
+    infoText.Text = "⚙️ SYNDICATE V1\n\n✅ Live Keybind System\n✅ Custom Rebinding\n✅ Instant Updates"
+    infoText.TextColor3 = Color3.fromRGB(150, 180, 255)
+    infoText.TextSize = 11
+    infoText.TextXAlignment = Enum.TextXAlignment.Left
+    infoText.TextYAlignment = Enum.TextYAlignment.Top
+    infoText.Parent = info
+    
+    -- Keybinds Card
+    local keybindsCard = Instance.new("Frame")
+    keybindsCard.Size = UDim2.new(1, -8, 0, 280)
+    keybindsCard.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    keybindsCard.BorderSizePixel = 0
+    keybindsCard.Parent = scroll
+    
+    Instance.new("UICorner", keybindsCard).CornerRadius = UDim.new(0, 12)
+    
+    local keybindsStroke = Instance.new("UIStroke")
+    keybindsStroke.Color = Color3.fromRGB(0, 150, 255)
+    keybindsStroke.Thickness = 1.5
+    keybindsStroke.Parent = keybindsCard
+    
+    local keybindsTitle = Instance.new("TextLabel")
+    keybindsTitle.Size = UDim2.new(1, -20, 0, 30)
+    keybindsTitle.Position = UDim2.new(0, 10, 0, 10)
+    keybindsTitle.BackgroundTransparency = 1
+    keybindsTitle.Font = Enum.Font.GothamBold
+    keybindsTitle.Text = "⌨️ Keybinds Configuration"
+    keybindsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    keybindsTitle.TextSize = 14
+    keybindsTitle.TextXAlignment = Enum.TextXAlignment.Left
+    keybindsTitle.Parent = keybindsCard
+    
+    local keybindsContainer = Instance.new("Frame")
+    keybindsContainer.Size = UDim2.new(1, -20, 1, -50)
+    keybindsContainer.Position = UDim2.new(0, 10, 0, 40)
+    keybindsContainer.BackgroundTransparency = 1
+    keybindsContainer.Parent = keybindsCard
+    
+    local keybindsLayout = Instance.new("UIListLayout")
+    keybindsLayout.Padding = UDim.new(0, 6)
+    keybindsLayout.Parent = keybindsContainer
+    
+    local function createKeybind(name, icon, currentKey)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, 0, 0, 38)
+        frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        frame.BorderSizePixel = 0
+        frame.Parent = keybindsContainer
+        
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+        
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Size = UDim2.new(0.6, 0, 1, 0)
+        nameLabel.Position = UDim2.new(0, 10, 0, 0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.Text = icon .. " " .. name
+        nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        nameLabel.TextSize = 12
+        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+        nameLabel.Parent = frame
+        
+        local keyButton = Instance.new("TextButton")
+        keyButton.Size = UDim2.new(0, 80, 0, 26)
+        keyButton.Position = UDim2.new(1, -86, 0.5, -13)
+        keyButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        keyButton.BorderSizePixel = 0
+        keyButton.Font = Enum.Font.GothamBold
+        keyButton.Text = currentKey.Name
+        keyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        keyButton.TextSize = 11
+        keyButton.Parent = frame
+        
+        Instance.new("UICorner", keyButton).CornerRadius = UDim.new(0, 6)
+        
+        local listening = false
+        
+        keyButton.MouseButton1Click:Connect(function()
+            if listening then return end
+            listening = true
+            keyButton.Text = "..."
+            keyButton.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+            
+            local connection
+            connection = UIS.InputBegan:Connect(function(input, gameProcessed)
+                if input.UserInputType == Enum.UserInputType.Keyboard then
+                    keybinds[name] = input.KeyCode
+                    keyButton.Text = input.KeyCode.Name
+                    keyButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+                    listening = false
+                    connection:Disconnect()
+                    
+                    game:GetService("StarterGui"):SetCore("SendNotification", {
+                        Title = "Keybind Updated!";
+                        Text = name .. " → " .. input.KeyCode.Name;
+                        Duration = 2;
+                    })
+                end
+            end)
+        end)
+    end
+    
+    createKeybind("Fly", "✈️", keybinds.Fly)
+    createKeybind("Speed", "🏃", keybinds.Speed)
+    createKeybind("Jump", "🦘", keybinds.Jump)
+    createKeybind("Noclip", "👻", keybinds.Noclip)
+    createKeybind("ESP", "👁️", keybinds.ESP)
+    createKeybind("Wallbang", "🧱", keybinds.Wallbang)
+    
+    spawn(function()
+        while scroll.Parent do
+            scroll.CanvasSize = UDim2.new(0, 0, 0, settingsLayout.AbsoluteContentSize.Y + 10)
+            task.wait(0.1)
+        end
+    end)
+end)
+
+-- KEYBIND SYSTEM
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == keybinds.Fly then
+        fly = not fly
+        if fly then
+            local char = Player.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local hrp = char.HumanoidRootPart
+                local bv = Instance.new("BodyVelocity", hrp)
+                bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                local bg = Instance.new("BodyGyro", hrp)
+                bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                
+                spawn(function()
+                    while fly and hrp and hrp.Parent do
+                        bg.CFrame = Workspace.CurrentCamera.CFrame
+                        local move = Vector3.new()
+                        if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + Workspace.CurrentCamera.CFrame.LookVector end
+                        if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - Workspace.CurrentCamera.CFrame.LookVector end
+                        if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - Workspace.CurrentCamera.CFrame.RightVector end
+                        if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + Workspace.CurrentCamera.CFrame.RightVector end
+                        if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
+                        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
+                        bv.Velocity = move * 50
+                        task.wait()
+                    end
+                    bv:Destroy()
+                    bg:Destroy()
+                end)
+            end
+        end
+    elseif input.KeyCode == keybinds.Speed then
+        speed = not speed
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = speed and 100 or 16
+        end
+    elseif input.KeyCode == keybinds.Jump then
+        jump = not jump
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.JumpPower = jump and 150 or 50
+        end
+    elseif input.KeyCode == keybinds.Noclip then
+        noclip = not noclip
+        spawn(function()
+            while noclip do
+                if Player.Character then
+                    for _, part in pairs(Player.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then part.CanCollide = false end
+                    end
+                end
+                task.wait()
+            end
+        end)
+    elseif input.KeyCode == keybinds.ESP then
+        esp = not esp
+        if esp then
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= Player and plr.Character then
+                    local highlight = Instance.new("Highlight", plr.Character)
+                    highlight.FillColor = Color3.fromRGB(0, 150, 255)
+                    highlight.OutlineColor = Color3.fromRGB(0, 200, 255)
+                end
+            end
+        else
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr.Character then
+                    local highlight = plr.Character:FindFirstChildOfClass("Highlight")
+                    if highlight then highlight:Destroy() end
+                end
+            end
+        end
+    elseif input.KeyCode == keybinds.Wallbang then
+        wallbang = not wallbang
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide then
+                v.Transparency = wallbang and 0.7 or 0
+            end
+        end
     end
 end)
+
+-- Load Home Tab
+homeTab.MouseButton1Click:Fire()
+
+-- Entrance Animation
+main.Position = UDim2.new(0.5, -350, -1, 0)
+TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    Position = UDim2.new(0.5, -350, 0.5, -225)
+}):Play()
+
+-- Notification
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "SYNDICATE V1";
+        Text = "UI Loaded Successfully!";
+        Duration = 3;
+    })
+end)
+
+print("✅ SYNDICATE V1 - Blue & Black Edition Loaded!")
+print("⌨️ Keybinds: F=Fly | G=Speed | H=Jump | N=Noclip | E=ESP | B=Wallbang")
+print("💡 Go to Settings tab to customize keybinds!")
