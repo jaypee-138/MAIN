@@ -8,7 +8,6 @@ local Player = Players.LocalPlayer
 
 -- Keybinds Storage
 local keybinds = {
-    Fly = Enum.KeyCode.,
     Speed = Enum.KeyCode.,
     Jump = Enum.KeyCode.,
     Noclip = Enum.KeyCode.,
@@ -682,36 +681,7 @@ end)
 -- KEYBIND SYSTEM
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    
-    if input.KeyCode == keybinds.Fly then
-        fly = not fly
-        if fly then
-            local char = Player.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local hrp = char.HumanoidRootPart
-                local bv = Instance.new("BodyVelocity", hrp)
-                bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-                local bg = Instance.new("BodyGyro", hrp)
-                bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-                
-                spawn(function()
-                    while fly and hrp and hrp.Parent do
-                        bg.CFrame = Workspace.CurrentCamera.CFrame
-                        local move = Vector3.new()
-                        if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + Workspace.CurrentCamera.CFrame.LookVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - Workspace.CurrentCamera.CFrame.LookVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - Workspace.CurrentCamera.CFrame.RightVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + Workspace.CurrentCamera.CFrame.RightVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
-                        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
-                        bv.Velocity = move * 50
-                        task.wait()
-                    end
-                    bv:Destroy()
-                    bg:Destroy()
-                end)
-            end
-        end
+
     elseif input.KeyCode == keybinds.Speed then
         speed = not speed
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
