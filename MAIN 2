@@ -1,4 +1,4 @@
--- SYNDICATE V1 - Blue & Black Theme
+-- VOID SYNDICATE V1 - Blue & Black Theme
 -- Complete UI with Full Keybind System
 -- All features working!
 
@@ -10,12 +10,12 @@ local Player = Players.LocalPlayer
 
 -- Keybinds Storage
 local keybinds = {
-    Fly = Enum.KeyCode.F,
-    Speed = Enum.KeyCode.G,
-    Jump = Enum.KeyCode.H,
-    Noclip = Enum.KeyCode.N,
-    ESP = Enum.KeyCode.E,
-    Wallbang = Enum.KeyCode.B
+    Fly = Enum.KeyCode.,
+    Speed = Enum.KeyCode.,
+    Jump = Enum.KeyCode.,
+    Noclip = Enum.KeyCode.,
+    ESP = Enum.KeyCode.,
+    Wallbang = Enum.KeyCode.
 }
 
 -- Feature States
@@ -23,7 +23,7 @@ local fly, speed, jump, noclip, esp, wallbang = false, false, false, false, fals
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "SYNDICATE_V1"
+gui.Name = "VOID_SYNDICATE_V1"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -123,7 +123,7 @@ title.Size = UDim2.new(0, 200, 0, 75)
 title.Position = UDim2.new(1, -210, 0, 0)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
-title.Text = "SYNDICATE"
+title.Text = "VOID_SYNDICATE"
 title.TextColor3 = Color3.fromRGB(0, 180, 255)
 title.TextSize = 24
 title.Parent = topBar
@@ -195,7 +195,7 @@ minFrame.Position = UDim2.new(0.5, -60, 0.5, -22)
 minFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 minFrame.BorderSizePixel = 0
 minFrame.Font = Enum.Font.GothamBold
-minFrame.Text = "SYNDICATE"
+minFrame.Text = "VOID SYNDICATE"
 minFrame.TextColor3 = Color3.fromRGB(0, 180, 255)
 minFrame.TextSize = 18
 minFrame.Visible = false
@@ -339,7 +339,7 @@ homeTab.MouseButton1Click:Connect(function()
     welcomeDesc.Position = UDim2.new(0, 10, 0, 50)
     welcomeDesc.BackgroundTransparency = 1
     welcomeDesc.Font = Enum.Font.Gotham
-    welcomeDesc.Text = "SYNDICATE V1 loaded!\nPlayers in server: " .. #Players:GetPlayers()
+    welcomeDesc.Text = "VOID SYNDICATE V1 loaded!\nPlayers in server: " .. #Players:GetPlayers()
     welcomeDesc.TextColor3 = Color3.fromRGB(150, 180, 255)
     welcomeDesc.TextSize = 12
     welcomeDesc.TextXAlignment = Enum.TextXAlignment.Left
@@ -439,42 +439,7 @@ mainTab.MouseButton1Click:Connect(function()
             callback(toggle, frameStroke)
         end)
     end
-    
-    addToggle("✈️ Fly", function(btn, stroke)
-        fly = not fly
-        btn.Text = fly and "ON" or "OFF"
-        btn.BackgroundColor3 = fly and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(50, 50, 60)
-        stroke.Color = fly and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(40, 40, 50)
         
-        if fly then
-            local char = Player.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local hrp = char.HumanoidRootPart
-                local bv = Instance.new("BodyVelocity", hrp)
-                bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-                local bg = Instance.new("BodyGyro", hrp)
-                bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-                
-                spawn(function()
-                    while fly and hrp and hrp.Parent do
-                        bg.CFrame = Workspace.CurrentCamera.CFrame
-                        local move = Vector3.new()
-                        if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + Workspace.CurrentCamera.CFrame.LookVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - Workspace.CurrentCamera.CFrame.LookVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - Workspace.CurrentCamera.CFrame.RightVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + Workspace.CurrentCamera.CFrame.RightVector end
-                        if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
-                        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
-                        bv.Velocity = move * 50
-                        task.wait()
-                    end
-                    bv:Destroy()
-                    bg:Destroy()
-                end)
-            end
-        end
-    end)
-    
     addToggle("🏃 Speed", function(btn, stroke)
         speed = not speed
         btn.Text = speed and "ON" or "OFF"
@@ -600,7 +565,7 @@ settingsTab.MouseButton1Click:Connect(function()
     infoText.Position = UDim2.new(0, 10, 0, 5)
     infoText.BackgroundTransparency = 1
     infoText.Font = Enum.Font.Gotham
-    infoText.Text = "⚙️ SYNDICATE V1\n\n✅ Live Keybind System\n✅ Custom Rebinding\n✅ Instant Updates"
+    infoText.Text = "⚙️ VOID SYNDICATE V1\n\n✅ Live Keybind System\n✅ Custom Rebinding\n✅ Instant Updates"
     infoText.TextColor3 = Color3.fromRGB(150, 180, 255)
     infoText.TextSize = 11
     infoText.TextXAlignment = Enum.TextXAlignment.Left
@@ -702,7 +667,6 @@ settingsTab.MouseButton1Click:Connect(function()
         end)
     end
     
-    createKeybind("Fly", "✈️", keybinds.Fly)
     createKeybind("Speed", "🏃", keybinds.Speed)
     createKeybind("Jump", "🦘", keybinds.Jump)
     createKeybind("Noclip", "👻", keybinds.Noclip)
@@ -812,12 +776,12 @@ TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.Easing
 -- Notification
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "SYNDICATE V1";
+        Title = "VOID SYNDICATE V1";
         Text = "UI Loaded Successfully!";
         Duration = 3;
     })
 end)
 
-print("✅ SYNDICATE V1 - Blue & Black Edition Loaded!")
+print("✅ VOID SYNDICATE V1 - Blue & Black Edition Loaded!")
 print("⌨️ Keybinds: F=Fly | G=Speed | H=Jump | N=Noclip | E=ESP | B=Wallbang")
 print("💡 Go to Settings tab to customize keybinds!")
