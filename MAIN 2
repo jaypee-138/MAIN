@@ -17,7 +17,7 @@ local keybinds = {
 }
 
 -- Feature States
-local fly, speed, jump, noclip, esp, wallbang = false, false, false, false, false, false
+local speed, jump, noclip, esp, wallbang = false, false, false, false, false, false
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
