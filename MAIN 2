@@ -1,6 +1,4 @@
--- VOID SYNDICATE V1 - Blue & Black Theme
--- Complete UI with Full Keybind System
--- All features working!
+-- VOID SYNDICATE V1
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
